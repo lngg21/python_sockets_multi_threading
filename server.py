@@ -3,14 +3,14 @@ import threading
 
 HEADER = 64
 PORT = 5050
+FORMAT = 'UTF-8'
+DISCONNECT_MESSAGE = "!DISCONNECT"
 # SERVER = ""
 # Another way to get the local IP address automatically
 SERVER = socket.gethostbyname(socket.gethostname())
-print(SERVER)
-print(socket.gethostname())
 ADDR = (SERVER, PORT)
-FORMAT = 'UTF-8'
-DISCONNECT_MESSAGE = "!DISCONNECT"
+
+# print(socket.gethostname())
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDR)
@@ -28,9 +28,13 @@ def handle_client(conn, addr):
                 connected = False
             print(f"[{addr}] {msg}")
         conn.send("Msg received".encode(FORMAT))
+        broadcast(msg)#Envia a mensagem recebida para todos os clientes conectados
 
     conn.close()
 
+    def broadcast(msg):
+        for conn in connections:
+            conn.send(msg.encode(FORMAT))
 
 def start():
     server.listen()
@@ -43,4 +47,8 @@ def start():
 
 
 print("[STARTING] server is starting...")
+
+connections = []
+
+
 start()
